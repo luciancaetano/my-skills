@@ -1,0 +1,30 @@
+{
+  "name": "luciancaetano-marketplace",
+  "owner": {
+    "name": "Lucian Santos Caetano",
+    "email": "lucian.santos.caetano@gmail.com"
+  },
+  "description": "Claude Code plugins by Lucian Santos Caetano",
+  "plugins": [
+    {
+      "name": "sdd-codify",
+      "source": "./",
+      "displayName": "SDD Codify",
+      "description": "Migrate any project's CLAUDE.md (or AGENTS.md) into a slim multi-file rules architecture with a spec-driven TDD workflow.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Lucian Santos Caetano",
+        "email": "lucian.santos.caetano@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "claude-md",
+        "agents-md",
+        "spec-driven-development",
+        "tdd",
+        "documentation",
+        "migration"
+      ]
+    }
+  ]
+}
