@@ -16,5 +16,5 @@ Add this repository as a marketplace, then install the plugin:
 
 ```
 /plugin marketplace add luciancaetano/my-skills
-/plugin install sdd-codify@luciancaetano-marketplace
+/plugin install sdd-codify@luciancaetano-skills
 ```
