@@ -9,6 +9,27 @@ template, the rule-file templates, and the workflow template. This is what
 Newest entries first. Never rewrite a past entry — if a change is later
 revised, add a new entry that supersedes it and say so.
 
+## 2026-08-08 — Phase-gated subagent templates (new Step 5.5)
+
+**Applies to:** new `references/agent-templates.md`, new optional output
+`.claude/agents/*.md`. Found via a real Laravel project (multi-tenant API)
+that runs spec-driven TDD through four dedicated subagents —
+`assumption-reviewer`, `spec-reviewer`, an implementer (`coder`), and
+`compliance-reviewer` — one per workflow phase, each forbidden from doing
+the next phase's job.
+**Change:** new Step 5.5 installs these subagents when the target project's
+scale/existing conventions warrant it (see "Scaling down" in the reference
+for solo-project vs. team-scale judgment); `target architecture (summary)`
+tree gained the `.claude/agents/` block; Step 6 checklist gained a
+subagent-references-resolve check; Step U1 now also diffs `.claude/agents/`
+against the template.
+**Detect:** target has `.claude/rules/workflow.md` (prior migration) but no
+`.claude/agents/{assumption-reviewer,spec-reviewer,compliance-reviewer}.md`,
+or one exists but references stale rule/gate filenames.
+**Update action:** propose Step 5.5 as a delta — write the missing agent
+files from `references/agent-templates.md`, or patch stale references in
+existing ones, scoped per "Scaling down."
+
 ## 2026-07-23 — Tool-managed block handling (Step 0 / Step 1 / Step U1)
 
 **Applies to:** the skill's own process. Found via a dry-run migration
