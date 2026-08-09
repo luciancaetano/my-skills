@@ -9,6 +9,29 @@ template, the rule-file templates, and the workflow template. This is what
 Newest entries first. Never rewrite a past entry — if a change is later
 revised, add a new entry that supersedes it and say so.
 
+## 2026-08-08b — Wire agent gates into workflow.md's numbered flow
+
+**Applies to:** `references/workflow-template.md`. Found via a real
+migration that installed spec-reviewer + coder agents (Step 5.5) but
+`workflow.md`'s numbered spec→tests→implementation→validation steps never
+said when to invoke them — only a loose "Skills" bullet list existed, so
+the agents sat unused.
+**Change:** workflow-template.md's steps 1/3/4 gained conditional
+`{...agent name}` gate lines (assumption gate before drafting, spec-review
+gate before presenting for approval, implementer dispatch at step 3,
+compliance gate before calling the change done) — each survives only if
+that agent was actually installed. "Skills" section renamed "Skills &
+Agents" and gained an agent bullet format naming the exact step each plugs
+into. SKILL.md Step 6 checklist tightened: an installed agent with no
+matching gate line in the numbered flow now fails verification.
+**Detect:** target has `.claude/agents/*.md` from this skill but
+`rules/workflow.md`'s numbered steps contain no reference to any of those
+agent names (only a Skills list, if that).
+**Update action:** propose inserting the matching gate line(s) from the
+current `references/workflow-template.md` at the correct step for each
+agent actually present in `.claude/agents/`; rename "## Skills" to "## Skills
+& Agents" and add the agent bullets.
+
 ## 2026-08-08 — Phase-gated subagent templates (new Step 5.5)
 
 **Applies to:** new `references/agent-templates.md`, new optional output

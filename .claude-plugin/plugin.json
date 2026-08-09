@@ -1,7 +1,7 @@
 {
   "name": "sdd-codify",
   "displayName": "SDD Codify",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Migrate any project's CLAUDE.md (or AGENTS.md) into a slim multi-file rules architecture: critical-rules root file, per-concern rule files, a dated decision log, and a spec-driven TDD workflow.",
   "author": {
     "name": "Lucian Santos Caetano",

@@ -135,7 +135,7 @@ Run this checklist before reporting the migration done:
 - [ ] **Boundaries defined** in `workflow.md` (Always / Ask first / Never) if the source or repo gave enough material to extract them — otherwise noted as a TODO for the team, not silently skipped.
 - [ ] **`decisions.md` has the Amending a decision section** verbatim.
 - [ ] **`workflow.md`'s spec step has the full method**: assumption-surfacing, `[NEEDS CLARIFICATION]` markers, EARS acceptance criteria, and the pre-implementation gate check — none silently dropped while filling placeholders.
-- [ ] **Subagents, if installed**: each references the project's real rule filenames and test/gate commands (no leftover `{placeholder}` or foreign tech), and `workflow.md`'s Skills/agents section names them.
+- [ ] **Subagents, if installed**: each references the project's real rule filenames and test/gate commands (no leftover `{placeholder}` or foreign tech), and `workflow.md`'s numbered flow (not just its Skills & Agents section) has a gate line naming each installed agent at the exact step it runs — an agent file with no matching gate line in the flow is a failed migration.
 
 Produce a **migration report** in the conversation: file tree written, mapping table, skills disposition, dropped items with justification, and any TODOs left for the team (e.g., "decisions.md seeded with 2 extracted decisions; add future ones at the top").
 
