@@ -9,6 +9,76 @@ template, the rule-file templates, and the workflow template. This is what
 Newest entries first. Never rewrite a past entry — if a change is later
 revised, add a new entry that supersedes it and say so.
 
+## 2026-08-14c — Explicit tests-exist gate before implementation
+
+**Applies to:** `references/agent-templates.md` (coder's Rules section),
+`references/workflow-template.md` (step 3, "Implementation last"). Found via
+a real migration where the coder agent sometimes started implementing (or
+wrote its own tests) when the test-writing step had been skipped or left
+gaps, because "tests exist before you start" was stated as a fact rather than
+something to check.
+**Change:** both the workflow's step 3 and the coder's Rules section now
+require an explicit pre-flight check — map every acceptance criterion to an
+existing failing test, run the suite to confirm red — before any
+implementation code is written. Missing or already-green coverage means
+step 2 was skipped: stop and report the gap, don't write tests inside the
+implementation step and don't guess at intended behavior from the spec
+alone.
+**Detect:** target's coder agent file has "Tests = gate" but no "Pre-flight"
+rule above it, or `workflow.md` step 3 has no "Tests-exist gate" bullet.
+**Update action:** insert the pre-flight rule into the installed coder
+agent's Rules section and the tests-exist gate bullet into step 3 of
+`rules/workflow.md`, matching the current templates.
+
+## 2026-08-14b — Hard word caps, no raw paste, coder silence, session-per-spec
+
+**Applies to:** `references/agent-templates.md` (Output section of all four
+agents), `references/workflow-template.md` (top-of-file context-hygiene note,
+coder's opening, end of the compliance-gate step). Tightens the 2026-08-14
+pass further: caps were a soft "terse" instruction with no number, so reports
+still drifted long.
+**Change:** each Output section now states a numeric hard cap (400 words for
+assumption-reviewer and spec-reviewer, 500 for compliance-reviewer, 300 for
+the coder's report — implementation code itself excluded from the coder's
+cap) and forbids pasting raw code/diff/log, requiring file:line citations
+instead; multi-item sections require one line per item, not a paragraph.
+`workflow.md` gained an explicit top-of-file note stating the fork-dispatch
+rule once for all four gates (the gate lines already said it individually).
+The coder template gained a "no narration while working" line. The
+compliance-gate step gained a "close the session per spec" note: once the
+verdict lands and developer review is done, end the session rather than
+starting the next feature in the same conversation.
+**Detect:** target's agent files lack a numbered word cap in their Output
+section, or `workflow.md`'s compliance-gate step has no session-close note.
+**Update action:** add the numeric cap + no-raw-paste + one-line-per-item
+wording to each installed agent's Output section; add the top-of-file
+context-hygiene note and the session-close note to `rules/workflow.md`; add
+the no-narration line to the installed coder agent file.
+
+## 2026-08-14 — Fork dispatch + capped output for phase agents
+
+**Applies to:** `references/agent-templates.md` (new "Invocation contract"
+section + Output section of all four agents), `references/workflow-template.md`
+(the four conditional gate/dispatch lines in steps 1/3/4). Found via a real
+migration where the multiagent flow's context/token cost had grown large:
+agents were spawned as fresh general-purpose subagents (re-paying full
+context every dispatch) and wrote long prose reports back into the parent
+conversation.
+**Change:** every gate/dispatch line now says to invoke via the Agent tool
+with `subagent_type: "fork"` instead of a fresh spawn — a fork shares the
+parent's context and prompt cache instead of re-explaining it. Each agent's
+Output section gained a terseness line (bullet points not prose, omit empty
+sections instead of writing "None," no restating the input) and a new
+"Invocation contract" section instructs the dispatcher to repeat the output
+cap in the dispatch prompt itself, since a forked agent inherits chatty
+context and can drift verbose.
+**Detect:** target has `.claude/agents/*.md` from this skill, but
+`workflow.md`'s gate lines don't mention `subagent_type: "fork"`, or the
+agent files' Output sections lack a terseness line.
+**Update action:** patch each present gate line in `rules/workflow.md` to
+name fork dispatch, and append the terseness line to each installed agent's
+Output section, matching the current templates.
+
 ## 2026-08-08b — Wire agent gates into workflow.md's numbered flow
 
 **Applies to:** `references/workflow-template.md`. Found via a real

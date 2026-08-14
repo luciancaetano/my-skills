@@ -11,7 +11,7 @@
       "source": "./",
       "displayName": "SDD Codify",
       "description": "Migrate any project's CLAUDE.md (or AGENTS.md) into a slim multi-file rules architecture with a spec-driven TDD workflow.",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "author": {
         "name": "Lucian Santos Caetano",
         "email": "lucian.santos.caetano@gmail.com"

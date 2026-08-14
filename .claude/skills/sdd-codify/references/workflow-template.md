@@ -9,16 +9,26 @@ The corresponding root-CLAUDE.md critical rule should summarize this in two line
 ```markdown
 # Development Workflow — Spec-Driven TDD
 
+> **Context hygiene.** Every subagent this workflow names (`{assumption-reviewer
+> agent name}`, `{spec-reviewer agent name}`, `{implementer agent name}`,
+> `{compliance-reviewer agent name}`) must be dispatched through a fork — the
+> Agent tool with `subagent_type: "fork"` — never a fresh spawn. The fork reads
+> the subagent's full report and relays back only what that agent's capped
+> Output section asks for; the subagent's raw tool calls, exploration, and logs
+> stay in the fork and never reach this conversation. See agent-templates.md's
+> invocation contract for the exact dispatch prompt.
+
 For every new feature AND every alteration/change to existing behavior, follow
 this order strictly:
 
 1. **Spec first.** Write a spec (behavior, inputs/outputs, edge cases — for
    alterations, describe the diff from current behavior) and present it to the
    developer for approval. Do not write any code yet.
-   {- **Assumption gate.** Before drafting, run `{assumption-reviewer agent
-     name}` to surface hidden assumptions and ambiguity. Fold its findings
-     into the assumptions list below. — include only if that agent was
-     installed.}
+   {- **Assumption gate.** Before drafting, dispatch `{assumption-reviewer
+     agent name}` via the Agent tool with `subagent_type: "fork"` (never a
+     fresh spawn — see agent-templates.md's invocation contract) to surface
+     hidden assumptions and ambiguity. Fold its findings into the assumptions
+     list below. — include only if that agent was installed.}
    - **How to present it:** the spec goes in the conversation as a plain
      markdown message, and the turn ends there — wait for the developer to
      approve or request changes in their reply. Never follow the spec with an
@@ -48,9 +58,10 @@ this order strictly:
      - Unwanted behavior: `IF <condition>, THEN THE <system> SHALL <response>`
      Reject vague terms ("appropriate", "quickly", "properly") — each
      criterion must be independently verifiable.
-   {- **Spec-review gate.** Before presenting for developer approval, run
-     `{spec-reviewer agent name}` against the drafted spec and fold its
-     findings in. — include only if that agent was installed.}
+   {- **Spec-review gate.** Before presenting for developer approval, dispatch
+     `{spec-reviewer agent name}` via the Agent tool with `subagent_type:
+     "fork"` against the drafted spec and fold its findings in. — include
+     only if that agent was installed.}
    - **Save on confirmation.** Once the developer confirms the spec (and only
      then — never before confirmation), save it verbatim as
      `docs/specs/YYYY-MM-DD-short-slug.md` so the project keeps a dated history
@@ -62,9 +73,17 @@ this order strictly:
    implementation change exists yet).
 3. **Implementation last.** Only after the tests are written, implement the
    code to make them pass, following TDD.
-   {- Dispatch implementation to `{implementer agent name}`, working against
-     the approved spec and the failing tests only. — include only if that
-     agent was installed; otherwise implement directly.}
+   - **Tests-exist gate.** Before writing or dispatching any implementation
+     code, confirm every acceptance criterion has a corresponding test and
+     that the suite is currently red for the new behavior. This is what
+     removes ambiguity for whoever implements next — code written against a
+     failing test has one unambiguous target; code written without one
+     invites guessing at what "done" means. Step 2 was skipped if any
+     criterion has no test — go back, don't improvise tests inside this step.
+   {- Dispatch implementation to `{implementer agent name}` via the Agent
+     tool with `subagent_type: "fork"`, working against the approved spec
+     and the failing tests only. — include only if that agent was installed;
+     otherwise implement directly.}
    - **Gate check.** Before writing implementation code, confirm: the change
      doesn't introduce a new abstraction layer where using the underlying
      framework/library directly would do, and it doesn't add scope beyond
@@ -80,9 +99,18 @@ this order strictly:
    {- Lint/format: `{lint command}` — if the project has one}
    {- Other checkpoints detected in step 0: type checker, schema generation,
       arch tests}
-   {- **Compliance gate.** Run `{compliance-reviewer agent name}` against the
-      approved spec once implementation and tests pass, before calling the
-      change done. — include only if that agent was installed.}
+   {- **Compliance gate.** Dispatch `{compliance-reviewer agent name}` via
+      the Agent tool with `subagent_type: "fork"` against the approved spec
+      once implementation and tests pass, before calling the change done. —
+      include only if that agent was installed.}
+   - **Close the session per spec.** Once the verdict is PASS or PASS WITH
+     MINOR GAPS and the developer's own review is done, end the session
+     instead of starting the next feature in the same conversation. The
+     saved spec (`docs/specs/`) and the diff are the durable record — the
+     path taken to reach them (assumption lists, spec drafts, review relays)
+     has no reuse value and only costs context: staying in one long
+     conversation across features forces repeated compaction. Start a fresh
+     session for the next spec.
 
 {## Boundaries — keep if the source project had (or the migration extracted)
 an Always/Ask-first/Never split for this kind of change; otherwise omit. Shape:

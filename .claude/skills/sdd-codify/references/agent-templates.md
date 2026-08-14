@@ -17,6 +17,16 @@ The workflow has four phases with different failure modes: assumptions hide befo
 
 Only create the ones the project's scale justifies — see "Scaling down" below. All four is the default when the target project already does spec-driven work at team scale (matches the source repo this skill was modeled on: multiple contributors, an existing agent-config directory, or an explicit ask for subagents).
 
+## Invocation contract — fork + capped output
+
+Every gate in `workflow.md` dispatches its agent via the Agent tool with `subagent_type: "fork"` — never a fresh general-purpose spawn. A fork inherits the parent's conversation context and shares its prompt cache, so the dispatcher doesn't re-pay for context the agent already has; a fresh agent would re-explain everything from zero, which is the main token sink in a multi-agent flow.
+
+Each dispatch prompt must restate the output cap explicitly, not just rely on the agent's own system prompt — models drift toward verbosity under a fork's inherited chatty context:
+
+> Report only, no preamble/postamble, no restating the input. Use exactly the Output skeleton below. Omit any empty subsection entirely — never write "None found" / "N/A" as a placeholder line.
+
+The per-agent Output sections below already carry this discipline; keep it when filling `{placeholders}` for the target project.
+
 ---
 
 ## `.claude/agents/assumption-reviewer.md`
@@ -135,6 +145,8 @@ Doubt → surface uncertainty.
 
 ## Output
 
+**Hard cap: 400 words total.**
+
 Review containing:
 
 1. Summary
@@ -146,6 +158,8 @@ Review containing:
 7. Hidden scope
 8. Clarification questions
 9. Recommended defaults (only when explicitly requested)
+
+Terse. Bullet points, not prose — one line per assumption/question/item, never a paragraph. Cite file:line as evidence, never paste code/diff/log. Omit any section with nothing to report — don't write "None." No summary restating the request.
 
 ---
 
@@ -312,6 +326,8 @@ Responsibility: review only.
 
 ## Output
 
+**Hard cap: 400 words total.**
+
 Review containing:
 
 1. Summary
@@ -325,6 +341,8 @@ Review containing:
 9. Missing boundaries
 10. Blocking issues
 11. Ready for approval (Yes / No)
+
+Terse. Bullet points, not prose — one verdict line per criterion/section, never a paragraph. Cite file:line or spec section as evidence, never paste code/diff/log. Omit any section with nothing to report — don't write "None." No summary restating the spec's content.
 
 ---
 
@@ -363,6 +381,8 @@ Write implementation code. Not spec, not tests — code that makes the approved 
 
 Never write spec. Never write tests (they exist before you start). Never commit.
 
+No narration while working — don't announce "I will read X" / "now editing Y" between tool calls. Work silently, produce the capped report only at the end.
+
 Job: read approved spec + already-written failing tests, implement minimum code to satisfy both.
 
 ---
@@ -395,6 +415,7 @@ Rules files in `.claude/rules/` bind you. Read the relevant ones before writing,
 ## Rules
 
 - **Spec = single source of truth.** Implement every acceptance criterion, nothing more, nothing less. No extra endpoints, fields, permissions, side effects the spec doesn't describe.
+- **Pre-flight: tests must already exist and fail.** Before writing a single line of implementation, map every acceptance criterion in the spec to a test that already exists and currently fails (run {the project's canonical test command} to confirm red). Any criterion with no matching test, or a test that's already green, means the test-writing step was skipped — stop, write nothing, and report exactly which criteria lack a failing test instead of writing tests yourself or guessing at the gap.
 - **Tests = gate.** Failing tests exist before you start. Implement till they pass. Don't delete, weaken, or rewrite them to force green. Run via {the project's canonical test command, through its wrapper if one exists — never bare on host if the project forbids that}. {If the project has a testing skill or convention for writing/editing tests, name the trigger here.}
 - **Skills, activate proactively** (per workflow.md, don't wait till stuck): {list any language/framework-lens skills this project keeps, and when each applies — e.g. a default lens for any code in the primary language, a security lens alongside auth-adjacent changes}.
 - **Match the codebase.** Sibling files, existing services/patterns, established base classes or helpers — reuse before inventing.
@@ -409,8 +430,10 @@ Rules files in `.claude/rules/` bind you. Read the relevant ones before writing,
 
 ## Output
 
+**Hard cap: 300 words for the report** (implementation code itself is not counted against this).
+
 - Implementation, minimal, matching spec + codebase conventions.
-- Short report: which spec requirements map to which files, test results, gate results, any deviations or gate crossings.
+- Short report: which spec requirements map to which files, test results, gate results, any deviations or gate crossings. One line per requirement/file, not prose. Cite file:line, never paste code/diff/log. No walkthrough of what was tried — only the outcome.
 
 ---
 
@@ -577,6 +600,8 @@ Doubt it → report the uncertainty.
 
 ## Output
 
+**Hard cap: 500 words total.**
+
 Produce a compliance report containing:
 
 1. Executive Summary
@@ -590,6 +615,8 @@ Produce a compliance report containing:
 9. Compliance Summary
 10. Blocking Issues
 11. Final Verdict
+
+Terse. Bullet points, not prose — one verdict line per acceptance criterion, never a paragraph. Omit any section with nothing to report — don't write "None." Evidence citations are file:line, never quoted code/diff/log blocks.
 
 ### Final Verdict
 
