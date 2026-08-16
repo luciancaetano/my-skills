@@ -95,12 +95,19 @@ this order strictly:
    {- Lint/format: `{lint command}` — if the project has one}
    {- Other checkpoints detected in step 0: type checker, schema generation,
       arch tests}
-   {- **Compliance gate.** Dispatch `{compliance-reviewer agent name}` via
-      the Agent tool with `subagent_type: "fork"` against the approved spec
-      once implementation and tests pass, before calling the change done. —
-      include only if that agent was installed.}
-   - **Close the session per spec.** Once the verdict is PASS or PASS WITH
-     MINOR GAPS and the developer's own review is done, end the session
+   {- **Compliance gate — ask first.** Once implementation and tests pass,
+      don't auto-dispatch `{compliance-reviewer agent name}`. Instead ask the
+      user whether to run it, stating a recommendation level derived from the
+      spec's own complexity: **recommended** (multiple requirements/acceptance
+      criteria, touches >1 file or module, non-trivial business logic) vs
+      **optional** (single small requirement, one file, low-risk change). If
+      the user confirms, dispatch via the Agent tool with `subagent_type:
+      "fork"` against the approved spec. If they decline, proceed to close
+      the session as below without the compliance report. — include only if
+      that agent was installed.}
+   - **Close the session per spec.** Once the compliance verdict (if run) is
+     PASS or PASS WITH MINOR GAPS — or the user declined the gate — and the
+     developer's own review is done, end the session
      instead of starting the next feature in the same conversation. The
      saved spec (`docs/specs/`) and the diff are the durable record — the
      path taken to reach them (assumption lists, spec drafts, review relays)
