@@ -1,6 +1,6 @@
 ---
 name: sdd-codify
-description: "Migrate any project's CLAUDE.md (or AGENTS.md) into a slim multi-file rules architecture — a short root CLAUDE.md with critical rules, `.claude/rules/*.md` split by concern, a spec-driven TDD workflow (spec → approval → failing tests → implementation → validation), phase-gated subagents (assumption-reviewer, spec-reviewer, implementer, compliance-reviewer) with templates in references/agent-templates.md, and project skills merged into rules or an indexed knowledge base. Technology-agnostic — works on any language or stack: it reorganizes the target project's own content and installs the flow, never bringing technology, application architecture, or folder conventions from any other project. Use this skill whenever the user wants to reorganize, restructure, split, refactor, 'clean up', or 'apply this architecture to' a CLAUDE.md; says their CLAUDE.md is too big, monolithic, or messy; wants skills consolidated into rules; or wants a spec/approval/TDD workflow installed in another project — even if they don't say the word 'migrate'. Also supports a `--update` mode that re-syncs a project this skill already migrated against the current version of its templates (see `references/changelog.md`) — use it for 'update the CLAUDE.md this skill generated' or 're-sync my rules with the latest version of this skill'."
+description: "Migrate any project's CLAUDE.md (or AGENTS.md) into a slim multi-file rules architecture — a short root CLAUDE.md with critical rules, `.claude/rules/*.md` split by concern, a spec-driven TDD workflow (spec → approval → failing tests → implementation → validation), phase-gated subagents (spec-reviewer-ultra, implementer, compliance-reviewer) with templates in references/agent-templates.md, and project skills merged into rules or an indexed knowledge base. Technology-agnostic — works on any language or stack: it reorganizes the target project's own content and installs the flow, never bringing technology, application architecture, or folder conventions from any other project. Use this skill whenever the user wants to reorganize, restructure, split, refactor, 'clean up', or 'apply this architecture to' a CLAUDE.md; says their CLAUDE.md is too big, monolithic, or messy; wants skills consolidated into rules; or wants a spec/approval/TDD workflow installed in another project — even if they don't say the word 'migrate'. Also supports a `--update` mode that re-syncs a project this skill already migrated against the current version of its templates (see `references/changelog.md`) — use it for 'update the CLAUDE.md this skill generated' or 're-sync my rules with the latest version of this skill'."
 ---
 
 # sdd-codify — CLAUDE.md Migration
@@ -24,7 +24,7 @@ Confirm the target has this skill's shape: root `CLAUDE.md` with a `## Critical 
 
 Read `references/changelog.md` top to bottom. For each entry, run its **Detect** check against the target's current files. Collect the entries that haven't landed yet — those are the deltas to apply. While reading, also check any skill named by name in the target's rule files against the *current* environment's catalog: availability may have changed since the original migration in either direction, in which case propose inlining a now-dangling reference, or simplifying now-inlined content back to a pointer if a matching skill has since appeared.
 
-Also check `.claude/agents/` against `references/agent-templates.md`: if the project has some but not all four phase agents, or an agent's rule/gate references have drifted from the current `.claude/rules/*.md` filenames, that's a delta too — propose it in the plan same as any changelog entry, scoped by "Scaling down" in that reference.
+Also check `.claude/agents/` against `references/agent-templates.md`: if the project has some but not all three phase agents, or an agent's rule/gate references have drifted from the current `.claude/rules/*.md` filenames, that's a delta too — propose it in the plan same as any changelog entry, scoped by "Scaling down" in that reference.
 
 Separately, check whether the project's own CLAUDE.md or rule files gained content since the last migration that was never classified (someone edited CLAUDE.md by hand instead of the rule files). Classify any such content per the Step 1 table so it isn't lost — except tool-managed blocks (Step 0's check), which are expected to change on their own and are never "new content to classify."
 
@@ -62,8 +62,7 @@ CLAUDE.md                      # slim: project one-liner, numbered Critical Rule
 .claude/<kb-name>/             # indexed knowledge base, only if skills get merged (optional)
   INDEX.md                     # precedence + context tables + quick reference
 .claude/agents/                # optional: phase-gated subagents for the spec-driven flow (see references/agent-templates.md)
-  assumption-reviewer.md       # reviews assumptions before spec is written
-  spec-reviewer.md             # reviews spec before approval
+  spec-reviewer-ultra.md       # reviews assumptions + spec before approval
   <coder-name>.md              # implements against approved spec + failing tests
   compliance-reviewer.md       # verifies implementation against approved spec after done
 docs/specs/                    # dated confirmed specs (created by the workflow, dir may start empty)
@@ -118,7 +117,7 @@ Execute the disposition approved in step 2, following `references/skills-to-rule
 
 ### Step 5.5 — Install subagents (when warranted)
 
-The spec-driven workflow gets enforcement teeth from phase-gated subagents: assumption review before the spec, spec review before approval, implementation, compliance review after. Decide scope during Step 0/2, not silently here — see "Scaling down" in `references/agent-templates.md` for when to propose all four vs. a subset vs. none (no prior multi-agent convention and no ask → propose two, mention the rest as extensions).
+The spec-driven workflow gets enforcement teeth from phase-gated subagents: assumption + spec review before approval, implementation, compliance review after. Decide scope during Step 0/2, not silently here — see "Scaling down" in `references/agent-templates.md` for when to propose all three vs. a subset vs. none (no prior multi-agent convention and no ask → propose two, mention the rest as extensions).
 
 Write `.claude/agents/*.md` from `references/agent-templates.md`, filling placeholders with the target project's real rule filenames, gate commands, and vocabulary (e.g. name the implementer agent after the project's own convention, not forced to "coder"). If the project already has agents under different names covering these phases, reconcile — keep their names/wording, patch only genuine gaps (missing gate references, missing sections) instead of overwriting.
 

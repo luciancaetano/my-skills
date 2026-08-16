@@ -9,6 +9,31 @@ template, the rule-file templates, and the workflow template. This is what
 Newest entries first. Never rewrite a past entry — if a change is later
 revised, add a new entry that supersedes it and say so.
 
+## 2026-08-16 — `assumption-reviewer` + `spec-reviewer` merged into `spec-reviewer-ultra`
+
+**Applies to:** `references/agent-templates.md` (was two agent blocks, now
+one), `references/workflow-template.md` (step 1's assumption-gate and
+spec-review-gate bullets), `SKILL.md` (agent list, target architecture tree).
+The two agents ran back-to-back on the same artifact (assumption-reviewer
+against the request before drafting, spec-reviewer against the draft before
+approval) with no implementation step between them — one pass covers both
+without losing coverage.
+**Change:** the four-agent set is now three. `spec-reviewer-ultra` reads the
+request AND the spec draft, runs both agents' full responsibility lists
+(hidden assumptions, ambiguity, missing requirements, conflicts, hidden
+scope, structure, EARS, coverage, decisions, boundaries, implementation
+leakage) in a single 500-word-capped report, gated once before developer
+approval. `workflow.md` step 1 loses its separate "Assumption gate" bullet;
+the "Spec-review gate" bullet now names `spec-reviewer-ultra` and also feeds
+it the original request.
+**Detect:** target has `.claude/agents/assumption-reviewer.md` and/or
+`.claude/agents/spec-reviewer.md`.
+**Update action:** write `.claude/agents/spec-reviewer-ultra.md` from the
+current template (reconcile any project-specific wording from the old
+files), delete `assumption-reviewer.md` and `spec-reviewer.md`, collapse
+`workflow.md` step 1's two gate bullets into the single spec-review-gate
+bullet pointing at `spec-reviewer-ultra`.
+
 ## 2026-08-14c — Explicit tests-exist gate before implementation
 
 **Applies to:** `references/agent-templates.md` (coder's Rules section),
